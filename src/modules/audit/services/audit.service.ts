@@ -16,30 +16,31 @@ export class AuditService {
         this.logger.log(`Audit Action: ${data.action} | Resource: ${data.resource_type} (${data.resource_id})`);
         this.logger.debug('Audit Data:', JSON.stringify(data));
 
+        // Misma tabla que flux-core-backend (migración audit.audit_logs), no public.audit_logs.
         const query = `
-            INSERT INTO audit_logs (
-                tenant_id, 
-                actor_user_id, 
-                action, 
-                resource_type, 
-                resource_id, 
-                metadata_json, 
-                ip, 
-                user_agent, 
+            INSERT INTO audit.audit_logs (
+                tenant_id,
+                actor_user_id,
+                action,
+                resource_type,
+                resource_id,
+                metadata_json,
+                ip,
+                user_agent,
                 occurred_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9)
         `;  
 
         const values = [
             data.tenant_id,
-            data.actor_user_id,
+            data.actor_user_id ?? null,
             data.action,
             data.resource_type,
             data.resource_id,
-            data.metadata_json || {},
+            JSON.stringify(data.metadata_json ?? {}),
             data.ip || null,
             data.user_agent || null,
-            data.occurred_at
+            data.occurred_at,
         ];
 
         try {
