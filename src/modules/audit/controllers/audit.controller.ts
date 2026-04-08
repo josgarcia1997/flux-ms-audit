@@ -29,14 +29,28 @@ export class AuditController {
                 }
             }
 
+            // Envelope típico Nest RMQ: { pattern, data }. Normalizamos a plano del DTO.
+            let normalized = rawData;
+            if (
+                normalized &&
+                typeof normalized === 'object' &&
+                'data' in normalized &&
+                normalized.data &&
+                typeof normalized.data === 'object' &&
+                'tenant_id' in (normalized.data as object)
+            ) {
+                normalized = (normalized as { data: unknown }).data;
+            }
+
             // 2. Transformamos el objeto plano a una instancia del DTO
-            const auditLogDto = plainToInstance(CreateAuditLogDto, rawData);
+            const auditLogDto = plainToInstance(CreateAuditLogDto, normalized);
 
             // 3. Validamos manualmente la instancia
             const errors = await validate(auditLogDto);
             if (errors.length > 0) {
-                this.logger.error('Validation failed for incoming audit log');
-                this.logger.debug(JSON.stringify(errors));
+                this.logger.warn(
+                    `Validación audit_log rechazada: ${JSON.stringify(errors)}`,
+                );
                 // Confirmamos el mensaje para que no se quede bloqueando la cola, 
                 // pero podrías enviarlo a una cola de errores.
                 channel.ack(originalMsg);

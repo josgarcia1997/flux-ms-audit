@@ -1,0 +1,47 @@
+services:
+  # Broker compartido: otros MS en la red flux-shared pueden usar amqp://guest:guest@flux-rabbitmq:5672
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: flux-rabbitmq
+    hostname: flux-rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    networks:
+      - flux-shared
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  audit-service:
+    build: .
+    ports:
+      - "${PORT:-3011}:3011"
+    networks:
+      - flux-shared
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3011
+      RABBITMQ_URI: ${RABBITMQ_URI:-amqp://guest:guest@flux-rabbitmq:5672}
+      RABBITMQ_AUDIT_QUEUE: ${RABBITMQ_AUDIT_QUEUE:-audit_queue}
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: ${DB_PORT:-5432}
+      # Mismo criterio que receipt: .env con DB_USERNAME / DB_DATABASE
+      DB_NAME: ${DB_NAME:-${DB_DATABASE:-flux_audit_db}}
+      DB_USER: ${DB_USER:-${DB_USERNAME:-postgres}}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+    restart: unless-stopped
+
+networks:
+  flux-shared:
+    external: true
