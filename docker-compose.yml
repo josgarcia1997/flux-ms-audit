@@ -13,7 +13,7 @@ services:
     networks:
       - flux-shared
     healthcheck:
-      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      test: [ 'CMD', 'rabbitmq-diagnostics', '-q', 'ping' ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   audit-service:
-    build: .
+    image: ghcr.io/josgarcia1997/flux-ms-audit:latest
     ports:
       - "${PORT:-3011}:3011"
     networks:
