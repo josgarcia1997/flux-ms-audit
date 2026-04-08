@@ -5,9 +5,10 @@ export class CreateAuditLogDto {
     @IsNotEmpty()
     tenant_id: string;
 
-    @IsString()
-    @IsNotEmpty()
-    actor_user_id: string;
+    /** NULL en BD (uuid). No usar strings como "unknown": PostgreSQL rechaza el INSERT. */
+    @IsOptional()
+    @IsUUID()
+    actor_user_id?: string | null;
 
     @IsString()
     @IsNotEmpty()
