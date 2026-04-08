@@ -8,9 +8,9 @@ export default registerAs('app', () => ({
     },
     database: {
         host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT, 10) || 5432,
-        user: process.env.DB_USER || 'postgres',
+        port: parseInt(process.env.DB_PORT ?? '5432', 10) || 5432,
+        user: process.env.DB_USER || process.env.DB_USERNAME || 'postgres',
         password: process.env.DB_PASSWORD || 'postgres',
-        name: process.env.DB_NAME || 'flux_audit_db',
+        name: process.env.DB_NAME || process.env.DB_DATABASE || 'flux_audit_db',
     },
 }));

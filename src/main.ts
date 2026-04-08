@@ -1,18 +1,12 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable global validation for all incoming messages
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
-
+  // No ValidationPipe global: con forbidNonWhitelisted puede romper mensajes RMQ antes del handler.
+  // Los eventos audit_log se validan en AuditController con class-validator.
 
   const rabbitUri = process.env.RABBITMQ_URI || 'amqp://localhost:5672';
   const rabbitQueue = process.env.RABBITMQ_AUDIT_QUEUE || 'audit_queue';
