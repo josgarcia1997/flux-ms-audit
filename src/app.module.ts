@@ -17,9 +17,5 @@ import appConfig from './config/app.config';
   ],
   controllers: [AppController],
   providers: [AppService],
-  ssl: {
-    require: true,
-    rejectUnauthorized: false,
-  },
 })
 export class AppModule { }
