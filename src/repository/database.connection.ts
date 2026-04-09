@@ -9,7 +9,7 @@ export class DatabaseConnection implements OnModuleInit, OnModuleDestroy {
 
     constructor(private configService: ConfigService) {
         const dbConfig = this.configService.get('app.database');
-        this.logger.debug(`Database configuration: host=${dbConfig.host}, ssl=${dbConfig.ssl}`);
+        this.logger.log(`Database config: host=${dbConfig.host}, ssl=${dbConfig.ssl}`);
 
         this.pool = new Pool({
             host: dbConfig.host,

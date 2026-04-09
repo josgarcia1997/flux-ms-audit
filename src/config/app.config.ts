@@ -12,6 +12,6 @@ export default registerAs('app', () => ({
         user: process.env.DB_USER || process.env.DB_USERNAME || 'postgres',
         password: process.env.DB_PASSWORD || 'postgres',
         name: process.env.DB_NAME || process.env.DB_DATABASE || 'flux_audit_db',
-        ssl: process.env.DB_SSL === 'true' || process.env.DB_SSL === '1',
+        ssl: process.env.DB_SSL !== 'false',
     },
 }));
