@@ -9,6 +9,7 @@ export class DatabaseConnection implements OnModuleInit, OnModuleDestroy {
 
     constructor(private configService: ConfigService) {
         const dbConfig = this.configService.get('app.database');
+        this.logger.debug(`Database configuration: host=${dbConfig.host}, ssl=${dbConfig.ssl}`);
 
         this.pool = new Pool({
             host: dbConfig.host,
@@ -16,7 +17,7 @@ export class DatabaseConnection implements OnModuleInit, OnModuleDestroy {
             user: dbConfig.user,
             password: dbConfig.password,
             database: dbConfig.name,
-            ssl: dbConfig.ssl ? { rejectUnauthorized: false } : false,
+            ssl: dbConfig.ssl ? { require: true, rejectUnauthorized: false } : false,
             max: 20,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,
