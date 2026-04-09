@@ -17,7 +17,7 @@ export class DatabaseConnection implements OnModuleInit, OnModuleDestroy {
             user: dbConfig.user,
             password: dbConfig.password,
             database: dbConfig.name,
-            ssl: dbConfig.ssl ? { require: true, rejectUnauthorized: false } : false,
+            ssl: dbConfig.ssl ? { rejectUnauthorized: false } : false,
             max: 20,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,
