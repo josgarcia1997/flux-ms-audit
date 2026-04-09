@@ -40,6 +40,7 @@ services:
       DB_NAME: ${DB_NAME:-${DB_DATABASE:-flux_audit_db}}
       DB_USER: ${DB_USER:-${DB_USERNAME:-postgres}}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_SSL: ${DB_SSL:-false}
     restart: unless-stopped
 
 networks:
